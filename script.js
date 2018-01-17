@@ -14,7 +14,10 @@
     }
 
     function createProductBlock (i) {
-        var param = ['general', 'img', 'code', 'title', 'assocProducts', 'button', 'unit', 'swapUnit', 'price'];
+        var param = [
+            'general', 'horizontal', 'vertical', 'img', 'code', 'title', 'assocProducts',
+            'status', 'button', 'unit', 'price', 'swapUnit'
+        ];
         for (var j = 0; j < param.length; j++) {
             var str;
             var someBlock;
@@ -24,10 +27,14 @@
             someBlock = document.createElement('div');
             someBlock.className = str + 'Div';
             someBlock.id = str + 'Div' + i;
-            if (str === 'general') {
+            if (j === 0) {
                 document.getElementById('main-div').appendChild(someBlock);
-            } else {
+            } else if (j === 1 || j === 2) {
                 document.getElementById('generalDiv' + i).appendChild(someBlock);
+            } else if (j <= 6) {
+                document.getElementById('horizontalDiv' + i).appendChild(someBlock);
+            } else {
+                document.getElementById('verticalDiv' + i).appendChild(someBlock);
             }
         }
     }
@@ -46,16 +53,30 @@
         var code;
         code = document.createElement('span');
         code.className = 'productCode';
-        code.innerHTML = data["code"];
+        code.innerHTML = 'Код: ' + data["code"];
         document.getElementById('codeDiv' + i).appendChild(code);
     }
+
+    function createStatus (i) {
+        var span;
+        span = document.createElement('span');
+        if (i % 13 !== 0) {
+            span.className = 'statusOn';
+            span.innerHTML = 'В наличии';
+        } else {
+            span.className = 'statusOff';
+            span.innerHTML = 'Нет в наличии';
+        }
+        document.getElementById('statusDiv' + i).appendChild(span);
+    }
+
 
     function createProductTitle (i, data) {
         var title;
         title = document.createElement('span');
         title.className = 'productTitle';
         title.innerHTML = data["title"];
-        document.getElementById('codeDiv' + i).appendChild(title);
+        document.getElementById('titleDiv' + i).appendChild(title);
     }
 
     function createAssocProducts (i, data) {
@@ -63,14 +84,15 @@
         var assocProduct;
         var str = '';
         var strData = data['assocProducts'];
-        assocProducts = document.createElement('p');
+        assocProducts = document.createElement('span');
+        assocProducts.innerHTML = '<b>Могут понадобиться: </b>';
         document.getElementById('assocProductsDiv' + i).appendChild(assocProducts);
 
         for (var j = 0; j < strData.length; j++) {
             if (strData[j] !== ";") {
                 str += strData[j];
             } else if (strData[j] === ';') {
-                str += ", ";
+                (j !== strData.length - 1) ? str += ", " : str += '.';
                 assocProduct = document.createElement('a');
                 assocProduct.href = '#';
                 assocProduct.className = 'link';
@@ -96,6 +118,7 @@
         button = document.createElement('span');
         button.className = 'button';
         button.innerHTML = 'В Корзину';
+        button.setAttribute('data-product-id', data['productId']);
 
         stepperInput = document.createElement('input');
         stepperInput.className = 'stepperInput';
@@ -108,12 +131,11 @@
         stepperUp = document.createElement('span');
         stepperUp.className = 'stepperUp';
 
-        document.getElementById('buttonDiv' + i).setAttribute('data-product-id', data['productId']);
         document.getElementById('buttonDiv' + i).appendChild(stepperDiv);
-        document.getElementById('stepperDiv' + i).appendChild(button);
         document.getElementById('stepperDiv' + i).appendChild(stepperInput);
         document.getElementById('stepperDiv' + i).appendChild(stepperUp);
         document.getElementById('stepperDiv' + i).appendChild(stepperDown);
+        document.getElementById('stepperDiv' + i).appendChild(button);
     }
 
     function createUnit (i, data) {
@@ -126,28 +148,28 @@
          formulSpan.className = 'formulSpan';
 
          if (data["unit"] === data["unitAlt"]) {
-             textSpan.innerHTML = 'Продаётся только' + data["unit"];
+             textSpan.innerHTML = 'Продаётся только ' + data["unit"];
              document.getElementById('unitDiv' + i).appendChild(textSpan);
          } else if (data["unit"] === "шт.") {
-             textSpan.innerHTML = 'Продаётся поштучно';
+             textSpan.innerHTML = 'Продаётся поштучно ';
              formulSpan.innerHTML = '1 шт. = ' + data["unitRatioAlt"] + data["unitAlt"];
 
              document.getElementById('unitDiv' + i).appendChild(textSpan);
              document.getElementById('unitDiv' + i).appendChild(formulSpan);
          } else if (data["unit"] === "упак.") {
-             textSpan.innerHTML = 'Продаётся упаковками';
+             textSpan.innerHTML = 'Продаётся упаковками ';
              formulSpan.innerHTML = '1 уп. = ' + data["unitRatioAlt"] + data["unitAlt"];
 
              document.getElementById('unitDiv' + i).appendChild(textSpan);
              document.getElementById('unitDiv' + i).appendChild(formulSpan);
          } else if (data["unit"] === "м. кв.") {
-             textSpan.innerHTML = 'Продаётся квадратными метрами';
+             textSpan.innerHTML = 'Продаётся квадратными метрами ';
              formulSpan.innerHTML = '1 м. кв. = ' + data["unitRatioAlt"] + data["unitAlt"];
 
              document.getElementById('unitDiv' + i).appendChild(textSpan);
              document.getElementById('unitDiv' + i).appendChild(formulSpan);
          } else if (data["unit"] === "м/п") {
-             textSpan.innerHTML = 'Продаётся погонными метрами';
+             textSpan.innerHTML = 'Продаётся погонными метрами ';
              formulSpan.innerHTML = '1 м. п. = ' + data["unitRatioAlt"] + data["unitAlt"];
 
              document.getElementById('unitDiv' + i).appendChild(textSpan);
@@ -172,7 +194,7 @@
         p1.className = 'unit-text';
         p2.className = 'unit-text';
         p1.innerHTML = 'За ' + data["unit"];
-        p2.innerHTML = 'За' + data["unitAlt"];
+        p2.innerHTML = 'За ' + data["unitAlt"];
 
         document.getElementById('swapUnitDiv' + i).appendChild(div1);
         document.getElementById('swapUnitDiv' + i).appendChild(div2);
@@ -187,15 +209,15 @@
 
         priceGold = document.createElement('p');
         priceGold.className = 'price_gold';
-        priceGold.innerHTML = 'По карте <br> клуба' + data["priceGold"] + 'руб.';
+        priceGold.innerHTML = 'По карте <br> клуба ' + data["priceGold"] + 'руб.';
 
         price = document.createElement('p');
         price.className = 'price';
         price.innerHTML = data["priceRetail"] + 'руб.';
 
         priceDiscond = document.createElement('p');
-        priceDiscond.className = 'price';
-        priceDiscond.innerHTML = 'Можно купить за ' + data["priceGold"] + 'бонуса.';
+        priceDiscond.className = 'bonus-price';
+        priceDiscond.innerHTML = 'Можно купить за ' + data["priceGold"] + ' бонуса.';
 
         document.getElementById('priceDiv' + i).appendChild(priceGold);
         document.getElementById('priceDiv' + i).appendChild(price);
@@ -209,6 +231,7 @@
             createProductBlock(i);
             createProductImg(i, data[i]);
             createProductCode(i, data[i]);
+            createStatus(i);
             createProductTitle(i, data[i]);
             createAssocProducts(i, data[i]);
             createBuyButton(i, data[i]);
