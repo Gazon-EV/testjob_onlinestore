@@ -115,7 +115,7 @@
         stepperDiv.className = 'stepperDiv';
         stepperDiv.id = 'stepperDiv' + i;
 
-        button = document.createElement('span');
+        button = document.createElement('div');
         button.className = 'button';
         button.innerHTML = 'В Корзину';
         button.setAttribute('data-product-id', data['productId']);
@@ -131,11 +131,11 @@
         stepperUp = document.createElement('span');
         stepperUp.className = 'stepperUp';
 
+        document.getElementById('buttonDiv' + i).appendChild(stepperInput);
         document.getElementById('buttonDiv' + i).appendChild(stepperDiv);
-        document.getElementById('stepperDiv' + i).appendChild(stepperInput);
         document.getElementById('stepperDiv' + i).appendChild(stepperUp);
         document.getElementById('stepperDiv' + i).appendChild(stepperDown);
-        document.getElementById('stepperDiv' + i).appendChild(button);
+        document.getElementById('buttonDiv' + i).appendChild(button);
     }
 
     function createUnit (i, data) {
